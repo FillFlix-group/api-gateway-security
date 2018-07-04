@@ -10,10 +10,13 @@ public class OAuth2Token {
     private String tokenType;
 
     @JsonProperty("expires_in")
-    private String expiresIn;
+    private int expiresIn;
 
     @JsonProperty("refresh_token")
     private String refreshToken;
+    
+    @JsonProperty("scope")
+    private String scope;
 
     public String getAccessToken() {
         return accessToken;
@@ -31,11 +34,11 @@ public class OAuth2Token {
         this.tokenType = tokenType;
     }
 
-    public String getExpiresIn() {
+    public int getExpiresIn() {
         return expiresIn;
     }
 
-    public void setExpiresIn(String expiresIn) {
+    public void setExpiresIn(int expiresIn) {
         this.expiresIn = expiresIn;
     }
 
@@ -46,5 +49,15 @@ public class OAuth2Token {
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
+	public String getScope() {
+		return scope;
+	}
+
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+    
+    
 
 }

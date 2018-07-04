@@ -49,14 +49,10 @@ public class AuthorizationCodeTokenService {
 			tokenInfo = new OAuth2Token();
 			tokenInfo.setAccessToken((String) map.get("access_token"));
 			tokenInfo.setTokenType((String) map.get("token_type"));
-			tokenInfo.setRefreshToken((String) map.get("refresh_token"));
-//			tokenInfo.setExpiresIn((String) map.get("expires_in"));
+	//		tokenInfo.setRefreshToken((String) map.get("refresh_token"));
+			tokenInfo.setExpiresIn((int) map.get("expires_in"));
+			tokenInfo.setScope((String) map.get("scope"));
 
-			System.out.println(tokenInfo + "***************");
-			// System.out.println("access_token ="+map.get("access_token")+",
-			// token_type="+map.get("token_type")+",
-			// refresh_token="+map.get("refresh_token")
-			// +", expires_in="+map.get("expires_in")+", scope="+map.get("scope"));;
 		} else {
 			System.out.println("No user exist----------");
 

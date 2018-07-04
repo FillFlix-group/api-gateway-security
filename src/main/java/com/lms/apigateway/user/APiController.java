@@ -1,5 +1,7 @@
 package com.lms.apigateway.user;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,9 +45,18 @@ public class APiController {
 	@Autowired
 	AuthenticationProvider provider;
 
+	/**TODO
+	 * set refresh token with the right value in login response header
+	 * 
+	 * @param username
+	 * @param password
+	 * @param response
+	 * @return
+	 */
+	
 	@GetMapping("/login")
 	@ResponseBody
-	public User login(String username, String password) {
+	public User login(String username, String password, HttpServletResponse  response) {
 
 		ClientUserDetails clientUserDetails = service.loadUserByUsername(username);
 
@@ -78,9 +89,14 @@ public class APiController {
 			// User.class);
 			RestTemplate rest = new RestTemplate();
 			rest.put(endpoint, clientUser);
-
-		}
-
+			response.addIntHeader("X-User-ID", clientUser.getId().intValue());
+			response.addHeader("X-Access-Token", token.getAccessToken());
+			response.addHeader("X-Token-Type", token.getTokenType());
+			response.addIntHeader("X-Expires-In", token.getExpiresIn());
+//			response.addHeader("X-Refresh-Token", clientUser.getRefreshToken());
+			response.addHeader("X-Scope", token.getScope());
+//			response.addHeader("X-State", null);
+		}		
 		return clientUser;
 		// return mv;
 	}
