@@ -16,9 +16,9 @@ import org.springframework.web.client.RestTemplate;
 public class AuthorizationCodeTokenService {
 	// @formatter:off
 
-    public static final String REST_SERVICE_URI = "http://localhost:8080/";
+    public static final String REST_SERVICE_URI = "http://localhost:9005/";
     
-    public static final String AUTH_SERVER_URI = "http://localhost:8080/oauth/token";
+    public static final String AUTH_SERVER_URI = "http://localhost:9005/oauth/token";
     
     public static final String QPM_PASSWORD_GRANT = "?grant_type=password&username=lms&password=123";
     

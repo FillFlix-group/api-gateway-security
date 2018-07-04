@@ -39,7 +39,7 @@ public class ClientConfiguration {
         resourceDetails.setTokenName("oauth_token");
         resourceDetails.setClientId("clientapp");
         resourceDetails.setClientSecret("123456");
-        resourceDetails.setAccessTokenUri("http://localhost:8080/oauth/token");
+        resourceDetails.setAccessTokenUri("http://localhost:9005/oauth/token");
         resourceDetails.setScope(Arrays.asList("read_profile"));
         resourceDetails.setClientAuthenticationScheme(AuthenticationScheme.header);
         //@formatter:on
