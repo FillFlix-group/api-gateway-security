@@ -13,9 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.AccessTokenRequest;
-import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.common.exceptions.BadClientCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,13 +27,7 @@ import com.lms.apigateway.security.ClientUserDetailsService;
 public class APiController {
 	// @formatter:off
 
-	@Autowired
-	private OAuth2RestTemplate restTemplate;
-
-	// @Autowired
-	// private OAuth2ClientTokenSevices oAuth2ClientTokenSevices;
-
-	private AccessTokenRequest accessTokenRequest = new DefaultAccessTokenRequest();
+//	private AccessTokenRequest accessTokenRequest = new DefaultAccessTokenRequest();
 
 	@Autowired
 	private ClientUserDetailsService service;
