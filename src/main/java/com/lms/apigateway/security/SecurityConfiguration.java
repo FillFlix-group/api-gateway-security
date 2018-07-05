@@ -35,11 +35,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //@formatter:off
-        http
-            .authorizeRequests().antMatchers("/", "/index.html","/login/**","/oauth/token","http://localhost:6081/users/**","http://localhost:9000/api/users/**")
-            .permitAll().anyRequest().authenticated().and()
-            .logout().permitAll().and()
-            .csrf().disable();
+//        http
+//            .authorizeRequests().antMatchers("/", "/index.html","/login/**","/oauth/token","http://localhost:6081/users/**","http://localhost:9000/api/users/**")
+//            .permitAll().anyRequest().authenticated().and()
+//            .logout().permitAll().and()
+//            .csrf().disable();
+        
+        http.authorizeRequests().anyRequest().permitAll().and().csrf().disable();
       //@formatter:on
     }
     
