@@ -1,10 +1,14 @@
 package com.lms.apigateway.user;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,14 +17,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.discovery.EurekaClient;
-
 @Service
 public class AuthorizationCodeTokenService {
-	// @formatter:off
 
 	@Autowired
-	private EurekaClient eurekaClient;
+	private DiscoveryClient discoveryClient;
 
 	// protected String REST_SERVICE_URI =
 	// eurekaClient.getNextServerFromEureka("AUTHORIZATION-SERVER", false)
@@ -46,9 +47,9 @@ public class AuthorizationCodeTokenService {
 		RestTemplate restTemplate = new RestTemplate();
 
 		HttpEntity<String> request = new HttpEntity<String>(getHeadersWithClientCredentials());
-		String REST_SERVICE_URI = eurekaClient.getNextServerFromEureka("AUTHORIZATION-SERVER", false).getHomePageUrl();
-		ResponseEntity<Object> response = restTemplate.exchange(REST_SERVICE_URI+"oauth/token" + QPM_PASSWORD_GRANT, HttpMethod.POST,
-				request, Object.class);
+		URI REST_SERVICE_URI = serviceUrl();
+		ResponseEntity<Object> response = restTemplate.exchange(REST_SERVICE_URI + "/oauth/token" + QPM_PASSWORD_GRANT,
+				HttpMethod.POST, request, Object.class);
 		LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) response.getBody();
 		OAuth2Token tokenInfo = null;
 
@@ -82,5 +83,11 @@ public class AuthorizationCodeTokenService {
 		return headers;
 	}
 
-	// @formatter:on
+	public URI serviceUrl() {
+		List<ServiceInstance> list = discoveryClient.getInstances("AUTHORIZATION-SERVER");
+		if (list != null && list.size() > 0) {
+			return list.get(0).getUri();
+		}
+		return null;
+	}
 }

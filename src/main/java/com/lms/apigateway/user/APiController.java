@@ -1,8 +1,13 @@
 package com.lms.apigateway.user;
 
+import java.net.URI;
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,13 +20,11 @@ import org.springframework.security.oauth2.common.exceptions.BadClientCredential
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.lms.apigateway.oauth.CustomAuthenticationProvider;
 import com.lms.apigateway.security.ClientUserDetails;
 import com.lms.apigateway.security.ClientUserDetailsService;
-import com.netflix.discovery.EurekaClient;
 
 @Controller
 public class APiController {
@@ -47,7 +50,7 @@ public class APiController {
 	AuthenticationProvider provider;
 
 	@Autowired
-	private EurekaClient eurekaClient;
+	private DiscoveryClient discoveryClient;
 
 	/**
 	 * TODO set refresh token with the right value in login response header
@@ -89,9 +92,8 @@ public class APiController {
 			clientUser.setAccessToken(token.getAccessToken());
 			// users.save(clientUser);
 
-			String URIofUSerservice = eurekaClient.getNextServerFromEureka("users-service", false).getHomePageUrl();
-
-			String endpoint = URIofUSerservice + "users/" + clientUser.getId();
+			URI UriOfUserservice = serviceUrl();
+			String endpoint = UriOfUserservice + "/users/" + clientUser.getId();
 			RestTemplate rest = new RestTemplate();
 			rest.put(endpoint, clientUser);
 			response.addIntHeader("X-User-ID", clientUser.getId().intValue());
@@ -106,21 +108,11 @@ public class APiController {
 		// return mv;
 	}
 
-	private User tryToGetUserProfile() {
-		//
-		accessTokenRequest.add("username", "lms");
-		accessTokenRequest.add("password", "123");
-
-		String endpoint = "http://localhost:8080/api/profile";
-		User userProfile;
-		try {
-			userProfile = restTemplate.getForObject(endpoint, User.class);
-
-		} catch (HttpClientErrorException e) {
-			throw new RuntimeException("it was not possible to retrieve user profile");
+	public URI serviceUrl() {
+		List<ServiceInstance> list = discoveryClient.getInstances("USERS-SERVICE");
+		if (list != null && list.size() > 0) {
+			return list.get(0).getUri();
 		}
-		return userProfile;
-
+		return null;
 	}
-
 }

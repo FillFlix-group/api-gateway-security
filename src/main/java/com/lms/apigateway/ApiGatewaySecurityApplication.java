@@ -11,10 +11,11 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableZuulProxy
 @EnableDiscoveryClient
 @EnableEurekaClient
-@ComponentScan({"com.lms.apigateway" ,"com.lms.apigateway.rdbmserver"})
+@ComponentScan({ "com.lms.apigateway", "com.lms.apigateway.rdbmserver" })
 public class ApiGatewaySecurityApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiGatewaySecurityApplication.class, args);
 	}
+
 }
