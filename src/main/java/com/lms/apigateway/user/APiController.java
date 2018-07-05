@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import com.lms.apigateway.oauth.CustomAuthenticationProvider;
 import com.lms.apigateway.security.ClientUserDetails;
 import com.lms.apigateway.security.ClientUserDetailsService;
+import com.netflix.discovery.EurekaClient;
 
 @Controller
 public class APiController {
@@ -45,18 +46,21 @@ public class APiController {
 	@Autowired
 	AuthenticationProvider provider;
 
-	/**TODO
-	 * set refresh token with the right value in login response header
+	@Autowired
+	private EurekaClient eurekaClient;
+
+	/**
+	 * TODO set refresh token with the right value in login response header
 	 * 
 	 * @param username
 	 * @param password
 	 * @param response
 	 * @return
 	 */
-	
+
 	@GetMapping("/login")
 	@ResponseBody
-	public User login(String username, String password, HttpServletResponse  response) {
+	public User login(String username, String password, HttpServletResponse response) {
 
 		ClientUserDetails clientUserDetails = service.loadUserByUsername(username);
 
@@ -84,19 +88,20 @@ public class APiController {
 			OAuth2Token token = tokenService.getToken();
 			clientUser.setAccessToken(token.getAccessToken());
 			// users.save(clientUser);
-			String endpoint = "http://localhost:6081/users/" + clientUser.getId();
-			// restTemplate.postForObject("http://localhost:6081/users/", clientUser,
-			// User.class);
+
+			String URIofUSerservice = eurekaClient.getNextServerFromEureka("users-service", false).getHomePageUrl();
+
+			String endpoint = URIofUSerservice + "users/" + clientUser.getId();
 			RestTemplate rest = new RestTemplate();
 			rest.put(endpoint, clientUser);
 			response.addIntHeader("X-User-ID", clientUser.getId().intValue());
 			response.addHeader("X-Access-Token", token.getAccessToken());
 			response.addHeader("X-Token-Type", token.getTokenType());
 			response.addIntHeader("X-Expires-In", token.getExpiresIn());
-//			response.addHeader("X-Refresh-Token", clientUser.getRefreshToken());
+			// response.addHeader("X-Refresh-Token", clientUser.getRefreshToken());
 			response.addHeader("X-Scope", token.getScope());
-//			response.addHeader("X-State", null);
-		}		
+			// response.addHeader("X-State", null);
+		}
 		return clientUser;
 		// return mv;
 	}

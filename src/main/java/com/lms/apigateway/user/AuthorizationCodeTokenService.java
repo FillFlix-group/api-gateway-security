@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,22 +13,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.discovery.EurekaClient;
+
 @Service
 public class AuthorizationCodeTokenService {
 	// @formatter:off
 
-    public static final String REST_SERVICE_URI = "http://localhost:9005/";
-    
-    public static final String AUTH_SERVER_URI = "http://localhost:9005/oauth/token";
-    
-    public static final String QPM_PASSWORD_GRANT = "?grant_type=password&username=lms&password=123";
-    
-    public static final String QPM_ACCESS_TOKEN = "?access_token=";
+	@Autowired
+	private EurekaClient eurekaClient;
 
- 
+	// protected String REST_SERVICE_URI =
+	// eurekaClient.getNextServerFromEureka("AUTHORIZATION-SERVER", false)
+	// .getHomePageUrl();
+
+	// protected String AUTH_SERVER_URI = REST_SERVICE_URI + "oauth/token";
+
+	protected final String QPM_PASSWORD_GRANT = "?grant_type=password&username=lms&password=123";
+
+	protected final String QPM_ACCESS_TOKEN = "?access_token=";
 
 	public OAuth2Token getToken() {
-//		RestTemplate rest = new RestTemplate();
+		// RestTemplate rest = new RestTemplate();
 		return sendTokenRequest();
 	}
 
@@ -36,11 +42,12 @@ public class AuthorizationCodeTokenService {
 	 * be send with each request.
 	 */
 	@SuppressWarnings({ "unchecked" })
-	private static OAuth2Token sendTokenRequest() {
+	private OAuth2Token sendTokenRequest() {
 		RestTemplate restTemplate = new RestTemplate();
 
 		HttpEntity<String> request = new HttpEntity<String>(getHeadersWithClientCredentials());
-		ResponseEntity<Object> response =  restTemplate.exchange(AUTH_SERVER_URI + QPM_PASSWORD_GRANT,HttpMethod.POST, 
+		String REST_SERVICE_URI = eurekaClient.getNextServerFromEureka("AUTHORIZATION-SERVER", false).getHomePageUrl();
+		ResponseEntity<Object> response = restTemplate.exchange(REST_SERVICE_URI+"oauth/token" + QPM_PASSWORD_GRANT, HttpMethod.POST,
 				request, Object.class);
 		LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) response.getBody();
 		OAuth2Token tokenInfo = null;
@@ -49,7 +56,7 @@ public class AuthorizationCodeTokenService {
 			tokenInfo = new OAuth2Token();
 			tokenInfo.setAccessToken((String) map.get("access_token"));
 			tokenInfo.setTokenType((String) map.get("token_type"));
-	//		tokenInfo.setRefreshToken((String) map.get("refresh_token"));
+			// tokenInfo.setRefreshToken((String) map.get("refresh_token"));
 			tokenInfo.setExpiresIn((int) map.get("expires_in"));
 			tokenInfo.setScope((String) map.get("scope"));
 
