@@ -5,12 +5,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.stereotype.Component;
 
 import com.lms.apigateway.user.Permission;
 import com.lms.apigateway.user.Role;
 import com.lms.apigateway.user.User;
 
-
+@Component
 public class OAuth2GrantedAuthority implements GrantedAuthority {
 
 	// TODO permission from user management
@@ -22,8 +23,7 @@ public class OAuth2GrantedAuthority implements GrantedAuthority {
 	@Autowired
 	protected OAuth2RestTemplate restUser;
 
-	public OAuth2GrantedAuthority(Permission permission) {
-		this.permission = permission;
+	public OAuth2GrantedAuthority() {
 	}
 
 	@Override
