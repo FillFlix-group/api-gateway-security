@@ -39,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		 .antMatchers("/login/**","/oauth/token").permitAll().and()
 		 .authorizeRequests()
 		// .antMatchers("/api/v1/users-service/users/**").permitAll()
-		 .antMatchers("/api/v1/users-service/users/**").hasAuthority("CHATTING").anyRequest().authenticated()
+		 .antMatchers("/api/v1/users-service/users/**").hasAuthority("PARTNER_ADMIN").anyRequest().authenticated()
 		 .and().csrf().disable();
 
 	//	http.authorizeRequests().anyRequest().authenticated().and().httpBasic();

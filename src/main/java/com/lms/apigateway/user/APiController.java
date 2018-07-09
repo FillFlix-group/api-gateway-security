@@ -1,6 +1,7 @@
 package com.lms.apigateway.user;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +28,8 @@ import com.lms.apigateway.security.ClientUserDetailsService;
 public class APiController {
 	// @formatter:off
 
-//	private AccessTokenRequest accessTokenRequest = new DefaultAccessTokenRequest();
+	// private AccessTokenRequest accessTokenRequest = new
+	// DefaultAccessTokenRequest();
 
 	@Autowired
 	private ClientUserDetailsService service;
@@ -58,7 +60,8 @@ public class APiController {
 
 		ClientUserDetails clientUserDetails = service.loadUserByUsername(username);
 
-		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(username, password);
+		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(username, password,
+				clientUserDetails.getAuthorities());
 
 		if (!clientUserDetails.getPassword().equals(password)) {
 			throw new BadClientCredentialsException();
@@ -66,12 +69,12 @@ public class APiController {
 
 		Authentication auth = authenticationManager.authenticate(authReq);
 
-		SecurityContext sc = SecurityContextHolder.getContext();
-		sc.setAuthentication(auth);
-
-		System.out.println("******User Authoritie ********" + clientUserDetails.getAuthorities());
+		System.out.println("******User Authoritie ********" + auth.getAuthorities());
 
 		User clientUser = clientUserDetails.getClientUser();
+
+		SecurityContext sc = SecurityContextHolder.getContext();
+		sc.setAuthentication(auth);
 
 		if (clientUser.getAccessToken() == null) {
 			// TO DO Request an access token using password credienal
