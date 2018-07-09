@@ -2,21 +2,16 @@ package com.lms.apigateway.user;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lms.apigateway.security.ClientUserDetails;
 
-public class Role implements GrantedAuthority, Serializable {
+public class Role implements Serializable {
 	protected static final long serialVersionUID = 1L;
 
 	protected Long id;
@@ -111,16 +106,6 @@ public class Role implements GrantedAuthority, Serializable {
 	public String toString() {
 		return "Role [id=" + id + ", createdTime=" + createdTime + ", description=" + description + ", modifiedTime="
 				+ modifiedTime + ", name=" + name + ", usersCount=" + usersCount + ", permissions=" + permissions + "]";
-	}
-
-	@Override
-	public String getAuthority() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		ClientUserDetails loggedinUser = (ClientUserDetails) authentication.getPrincipal();
-		User user = restUser.getForObject("http://localhost:6081/users/" + loggedinUser.getUsername(), User.class);
-		List<String> permissionNames = new ArrayList<>();
-		user.getRole().getPermissions().forEach(a -> permissionNames.add(a.getName()));
-		return user.getRole().getPermissions().toString();
 	}
 
 }

@@ -14,6 +14,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,7 +31,7 @@ public class AuthorizationCodeTokenService {
 
 	// protected String AUTH_SERVER_URI = REST_SERVICE_URI + "oauth/token";
 
-	protected final String QPM_PASSWORD_GRANT = "?grant_type=password&username=lms&password=123";
+	protected final String QPM_PASSWORD_GRANT = "?grant_type=password";
 
 	protected final String QPM_ACCESS_TOKEN = "?access_token=";
 
@@ -45,10 +47,12 @@ public class AuthorizationCodeTokenService {
 	@SuppressWarnings({ "unchecked" })
 	private OAuth2Token sendTokenRequest() {
 		RestTemplate restTemplate = new RestTemplate();
-
 		HttpEntity<String> request = new HttpEntity<String>(getHeadersWithClientCredentials());
+		SecurityContext sc = SecurityContextHolder.getContext();
+		String loggedInUserEmail = (String) sc.getAuthentication().getPrincipal();
+		String loggedInUserPassword = (String) sc.getAuthentication().getCredentials();
 		URI REST_SERVICE_URI = serviceUrl();
-		ResponseEntity<Object> response = restTemplate.exchange(REST_SERVICE_URI + "/oauth/token" + QPM_PASSWORD_GRANT,
+		ResponseEntity<Object> response = restTemplate.exchange(REST_SERVICE_URI + "/oauth/token" + QPM_PASSWORD_GRANT +"&username="+loggedInUserEmail+"&password="+loggedInUserPassword,
 				HttpMethod.POST, request, Object.class);
 		LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) response.getBody();
 		OAuth2Token tokenInfo = null;

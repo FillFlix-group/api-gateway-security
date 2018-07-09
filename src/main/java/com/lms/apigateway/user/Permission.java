@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.security.core.GrantedAuthority;
-
-public class Permission implements GrantedAuthority, Serializable {
+public class Permission implements Serializable {
 	protected static final long serialVersionUID = 1L;
 
 	protected Long id;
@@ -51,12 +49,6 @@ public class Permission implements GrantedAuthority, Serializable {
 
 	@Override
 	public String toString() {
-		return this.getName();
-	}
-
-	@Override
-	public String getAuthority() {
-		// TODO Auto-generated method stub
 		return this.getName();
 	}
 
