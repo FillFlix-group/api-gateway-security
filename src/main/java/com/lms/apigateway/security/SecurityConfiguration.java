@@ -1,11 +1,9 @@
 package com.lms.apigateway.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -38,8 +36,58 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		 .authorizeRequests()
 		 .antMatchers("/login/**","/oauth/token").permitAll().and()
 		 .authorizeRequests()
-		// .antMatchers("/api/v1/users-service/users/**").permitAll()
-		 .antMatchers("/api/v1/users-service/users/**").hasAuthority("PARTNER_ADMIN").anyRequest().authenticated()
+		 .antMatchers(HttpMethod.POST,"/api/v1/users-service/users").hasAnyAuthority("ADD_DRIVER","ADD_PARTNER_BACKOFFICE_USER","ADD_USER")
+		 .antMatchers(HttpMethod.PUT,"/api/v1/users-service/users/{id}").hasAnyAuthority("EDIT_DRIVER","EDIT_PARTNER_BACKOFFICE_USER","EDIT_USER")
+		 .antMatchers(HttpMethod.DELETE,"/api/v1/users-service/users/{id}").hasAnyAuthority("DELETE_DRIVER","DELETE_PARTNER_BACKOFFICE_USER","DELETE_USER")
+		 .antMatchers(HttpMethod.POST,"/api/v1/users-service/roles").hasAnyAuthority("ADD_ROLE")
+		 .antMatchers(HttpMethod.PUT,"/api/v1/users-service/roles/{id}").hasAnyAuthority("EDIT_ROLE")
+		 .antMatchers(HttpMethod.DELETE,"/api/v1/users-service/roles/{id}").hasAnyAuthority("DELETE_ROLE")
+		 
+		 .antMatchers(HttpMethod.POST,"/api/v1/freights-service/freights").hasAuthority("ADD_FREIGHT")
+		 .antMatchers(HttpMethod.PUT,"/api/v1/freights-service/freights/{id}").hasAnyAuthority("EDIT_FREIGHT")
+		 .antMatchers(HttpMethod.PATCH,"/api/v1/freights-service/freights/{id}").hasAnyAuthority("EDIT_FREIGHT")
+		 
+		 .antMatchers(HttpMethod.POST,"/api/v1/vehicles-service/vehicles").hasAnyAuthority("ADD_VEHICLE")
+		 .antMatchers(HttpMethod.PUT,"/api/v1/vehicles-service/vehicles/{id}").hasAnyAuthority("EDIT_VEHICLE")
+		 .antMatchers(HttpMethod.PATCH,"/api/v1/vehicles-service/vehicles/{id}").hasAnyAuthority("EDIT_VEHICLE", "ARCHIVE_VEHICLE", "UNARCHIVE_VEHICLE")
+		 .antMatchers(HttpMethod.DELETE,"/api/v1/vehicles-service/vehicles/{id}").hasAnyAuthority("DELETE_VEHICLE")
+
+		 .antMatchers(HttpMethod.POST,"/api/v1/vehicles-service/manualOffers").hasAnyAuthority("ADD_MANUAL_OFFER")
+		 .antMatchers(HttpMethod.PUT,"/api/v1/vehicles-service/manualOffers/{id}").hasAnyAuthority("EDIT_MANUAL_OFFER")
+		 .antMatchers(HttpMethod.PATCH,"/api/v1/vehicles-service/manualOffers/{id}").hasAnyAuthority("EDIT_MANUAL_OFFER")
+
+		 .antMatchers(HttpMethod.GET,"/api/v1/reference-data-service/lookups").hasAnyAuthority("CONFIGURE_LIST_OF_VALUES")
+
+		 .antMatchers(HttpMethod.GET,"/api/v1/subscriptions-service/subscriptions/{id}").hasAnyAuthority("SUBSCRIPTION","APPROVE_SUBSCRIPTION")
+		 .antMatchers(HttpMethod.POST,"/api/v1/subscriptions-service/subscriptions").hasAnyAuthority("SUBSCRIPTION")
+		 .antMatchers(HttpMethod.PUT,"/api/v1/subscriptions-service/subscriptions/{id}").hasAnyAuthority("SUBSCRIPTION")
+		 .antMatchers(HttpMethod.PATCH,"/api/v1/subscriptions-service/subscriptions/{id}").hasAnyAuthority("APPROVE_SUBSCRIPTION")
+		 .antMatchers(HttpMethod.GET,"/api/v1/subscriptions-service/subscriptions/companyNames").permitAll()
+		 .antMatchers(HttpMethod.POST,"/api/v1/subscriptions-service/subscriptions/search").hasAnyAuthority("PARTNER_SEARCH")
+
+		 .antMatchers(HttpMethod.GET,"/api/v1/settings-service/settings/{id}").hasAnyAuthority("EDIT_SETTINGS")
+		 .antMatchers(HttpMethod.PUT,"/api/v1/settings-service/settings/{id}").hasAnyAuthority("EDIT_SETTINGS")
+		 .antMatchers(HttpMethod.GET,"/api/v1/settings-service/startsettings/{id}").hasAnyAuthority("EDIT_SETTINGS")
+		 
+		 .antMatchers(HttpMethod.POST,"/api/v1/documents-service/documents/upload/{prefix}/{documentType}").hasAnyAuthority("SUBSCRIPTION")
+		 .antMatchers(HttpMethod.GET,"/api/v1/documents-service/documents/download/{prefix}/{documentType}").permitAll()
+		 .antMatchers(HttpMethod.GET,"/api/v1/documents-service/documents/types/{prefix}").permitAll()
+		 
+		 .antMatchers(HttpMethod.GET,"/api/v1/freights-search-service/freights/{freightId}").hasAnyAuthority("FREIGHT_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/freights-search-service/freights/subscription/{subscriberId}").hasAnyAuthority("FREIGHT_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/freights-search-service/freights/user/{userId}").hasAnyAuthority("FREIGHT_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/freights-search-service/freights/search").hasAnyAuthority("FREIGHT_SEARCH")
+		 
+		 .antMatchers(HttpMethod.GET,"/api/v1/vehicles-search-service/vehicles/{vehicleId}").hasAnyAuthority("VEHICLE_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/vehicles-search-service/vehicles/subscription/{subscriberId}").hasAnyAuthority("VEHICLE_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/vehicles-search-service/vehicles/user/{userId}").hasAnyAuthority("VEHICLE_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/vehicles-search-service/vehiclesQuery/search").hasAnyAuthority("VEHICLE_SEARCH")
+		 
+		 .antMatchers(HttpMethod.GET,"/api/v1/vehicles-search-service/manualOffers/subscription/{subscriberId}").hasAnyAuthority("VEHICLE_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/vehicles-search-service/manualOffers/user/{userId}").hasAnyAuthority("VEHICLE_SEARCH")
+		 .antMatchers(HttpMethod.GET,"/api/v1/vehicles-search-service/manualOffers/{manualOfferId}").hasAnyAuthority("VEHICLE_SEARCH")
+
+		 .anyRequest().authenticated()
 		 .and().csrf().disable();
 
 	//	http.authorizeRequests().anyRequest().authenticated().and().httpBasic();
@@ -101,12 +149,4 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		// @formatter:on
 	}
-
-//	@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-//	@Override
-//	public AuthenticationManager authenticationManagerBean() throws Exception {
-//		return super.authenticationManagerBean();
-//	}
-
-
 }

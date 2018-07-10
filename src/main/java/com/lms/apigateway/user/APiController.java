@@ -1,7 +1,6 @@
 package com.lms.apigateway.user;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +15,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.BadClientCredentialsException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
@@ -54,16 +54,16 @@ public class APiController {
 	 * @return
 	 */
 
-	@GetMapping("/login")
+	@PostMapping("/login")
 	@ResponseBody
-	public User login(String username, String password, HttpServletResponse response) {
+	public User login(@RequestBody User user, HttpServletResponse response) {
 
-		ClientUserDetails clientUserDetails = service.loadUserByUsername(username);
+		ClientUserDetails clientUserDetails = service.loadUserByUsername(user.getUsername());
 
-		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(username, password,
+		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
 				clientUserDetails.getAuthorities());
 
-		if (!clientUserDetails.getPassword().equals(password)) {
+		if (!clientUserDetails.getPassword().equals(user.getPassword())) {
 			throw new BadClientCredentialsException();
 		}
 
@@ -76,7 +76,6 @@ public class APiController {
 		SecurityContext sc = SecurityContextHolder.getContext();
 		sc.setAuthentication(auth);
 
-		if (clientUser.getAccessToken() == null) {
 			// TO DO Request an access token using password credienal
 			/*
 			 * grant_type= password user name --> logged in user user password --> client
@@ -97,7 +96,6 @@ public class APiController {
 			// response.addHeader("X-Refresh-Token", clientUser.getRefreshToken());
 			response.addHeader("X-Scope", token.getScope());
 			// response.addHeader("X-State", null);
-		}
 		return clientUser;
 		// return mv;
 	}
