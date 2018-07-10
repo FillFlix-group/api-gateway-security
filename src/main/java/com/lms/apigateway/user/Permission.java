@@ -49,7 +49,7 @@ public class Permission implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Permission [id=" + id + ", description=" + description + ", name=" + name + "]";
+		return this.getName();
 	}
 
 }

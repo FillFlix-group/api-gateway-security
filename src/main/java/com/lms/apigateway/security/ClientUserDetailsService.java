@@ -22,6 +22,7 @@ public class ClientUserDetailsService implements UserDetailsService {
 
 	@Override
 	public ClientUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		
 		// Optional<User> optionalUser = users.findByUsername(username);
 		RestTemplate restTemplate = new RestTemplate();
 		URI userServiceUri =serviceUrl();

@@ -15,7 +15,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.BadClientCredentialsException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,7 +28,8 @@ import com.lms.apigateway.security.ClientUserDetailsService;
 public class APiController {
 	// @formatter:off
 
-//	private AccessTokenRequest accessTokenRequest = new DefaultAccessTokenRequest();
+	// private AccessTokenRequest accessTokenRequest = new
+	// DefaultAccessTokenRequest();
 
 	@Autowired
 	private ClientUserDetailsService service;
@@ -52,28 +54,28 @@ public class APiController {
 	 * @return
 	 */
 
-	@GetMapping("/login")
+	@PostMapping("/login")
 	@ResponseBody
-	public User login(String username, String password, HttpServletResponse response) {
+	public User login(@RequestBody User user, HttpServletResponse response) {
 
-		ClientUserDetails clientUserDetails = service.loadUserByUsername(username);
+		ClientUserDetails clientUserDetails = service.loadUserByUsername(user.getUsername());
 
-		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(username, password);
+		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
+				clientUserDetails.getAuthorities());
 
-		if (!clientUserDetails.getPassword().equals(password)) {
+		if (!clientUserDetails.getPassword().equals(user.getPassword())) {
 			throw new BadClientCredentialsException();
 		}
 
 		Authentication auth = authenticationManager.authenticate(authReq);
 
-		SecurityContext sc = SecurityContextHolder.getContext();
-		sc.setAuthentication(auth);
-
-		System.out.println("******User Authoritie ********" + clientUserDetails.getAuthorities());
+		System.out.println("******User Authoritie ********" + auth.getAuthorities());
 
 		User clientUser = clientUserDetails.getClientUser();
 
-		if (clientUser.getAccessToken() == null) {
+		SecurityContext sc = SecurityContextHolder.getContext();
+		sc.setAuthentication(auth);
+
 			// TO DO Request an access token using password credienal
 			/*
 			 * grant_type= password user name --> logged in user user password --> client
@@ -94,7 +96,6 @@ public class APiController {
 			// response.addHeader("X-Refresh-Token", clientUser.getRefreshToken());
 			response.addHeader("X-Scope", token.getScope());
 			// response.addHeader("X-State", null);
-		}
 		return clientUser;
 		// return mv;
 	}

@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class Role implements Serializable {
@@ -28,6 +31,9 @@ public class Role implements Serializable {
 	protected long usersCount;
 
 	protected List<Permission> permissions;
+
+	@Autowired
+	protected OAuth2RestTemplate restUser;
 
 	public Role() {
 	}
