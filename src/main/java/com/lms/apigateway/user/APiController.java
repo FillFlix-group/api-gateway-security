@@ -21,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 
 import com.lms.apigateway.oauth.CustomAuthenticationProvider;
 import com.lms.apigateway.security.ClientUserDetails;
@@ -91,7 +90,6 @@ public class APiController {
 		URI UriOfUserservice = serviceUrl();
 		final String endpoint = UriOfUserservice + "/users/" + clientUser.getId();
 			
-		RestTemplate template = new RestTemplate();
 		try {
 			RequestEntity<User> request = RequestEntity
 				.put(new URI(endpoint))
