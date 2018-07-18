@@ -1,7 +1,6 @@
 package com.lms.apigateway.user;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -9,8 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -84,33 +81,21 @@ public class APiController {
 			 * grant_type= password user name --> logged in user user password --> client
 			 * crediatial
 			 */
-		OAuth2Token token = tokenService.getToken();
-		clientUser.setAccessToken(token.getAccessToken());
-		// users.save(clientUser);
-		
-		URI UriOfUserservice = serviceUrl();
-		final String endpoint = UriOfUserservice + "/users/" + clientUser.getId();
-			
-		RestTemplate template = new RestTemplate();
-		try {
-			RequestEntity<User> request = RequestEntity
-				.put(new URI(endpoint))
-				.accept(MediaType.APPLICATION_JSON)
-				.body(clientUser);
-			//TODO: to be updated !
-//			template.exchange(request, User.class);
-		} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-		}
-			
-		response.addIntHeader("X-User-ID", clientUser.getId().intValue());
-		response.addHeader("X-Access-Token", token.getAccessToken());
-		response.addHeader("X-Token-Type", token.getTokenType());
-		response.addIntHeader("X-Expires-In", token.getExpiresIn());
-		// response.addHeader("X-Refresh-Token", clientUser.getRefreshToken());
-		response.addHeader("X-Scope", token.getScope());
-		// response.addHeader("X-State", null);
+			OAuth2Token token = tokenService.getToken();
+			clientUser.setAccessToken(token.getAccessToken());
+			// users.save(clientUser);
+
+			URI UriOfUserservice = serviceUrl();
+			String endpoint = UriOfUserservice + "/users/" + clientUser.getId();
+			RestTemplate rest = new RestTemplate();
+			rest.put(endpoint, clientUser);
+			response.addIntHeader("X-User-ID", clientUser.getId().intValue());
+			response.addHeader("X-Access-Token", token.getAccessToken());
+			response.addHeader("X-Token-Type", token.getTokenType());
+			response.addIntHeader("X-Expires-In", token.getExpiresIn());
+			// response.addHeader("X-Refresh-Token", clientUser.getRefreshToken());
+			response.addHeader("X-Scope", token.getScope());
+			// response.addHeader("X-State", null);
 		return clientUser;
 		// return mv;
 	}
