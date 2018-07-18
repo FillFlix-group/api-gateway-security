@@ -35,7 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
 		// @formatter:off
 		 http
 		 .authorizeRequests()
-		 .antMatchers("/login/**","/oauth/token").permitAll().and()
+		 .antMatchers("/login/**","/oauth/token", "/api/v1/reference-data-service/lookups").permitAll().and()
 		 .authorizeRequests()
 		 .antMatchers(HttpMethod.POST,UrlPatterns.USERS_SERVICE+UrlPatterns.ADD_USER).hasAnyAuthority("ADD_DRIVER","ADD_PARTNER_BACKOFFICE_USER","ADD_USER")
 		 .antMatchers(HttpMethod.PUT,UrlPatterns.USERS_SERVICE+UrlPatterns.EDIT_USER).hasAnyAuthority("EDIT_DRIVER","EDIT_PARTNER_BACKOFFICE_USER","EDIT_USER")
@@ -57,7 +57,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
 		 .antMatchers(HttpMethod.PUT,UrlPatterns.VEHICLES_SERVICE+UrlPatterns.EDIT_MANUAL_OFFER).hasAnyAuthority("EDIT_MANUAL_OFFER")
 		 .antMatchers(HttpMethod.PATCH,UrlPatterns.VEHICLES_SERVICE+UrlPatterns.CHANGE_MANUAL_OFFER_PROPERTY).hasAnyAuthority("EDIT_MANUAL_OFFER")
 
-		 .antMatchers(HttpMethod.GET,UrlPatterns.REFERENCE_DATA_SERVICE+UrlPatterns.GET_LOOKUPS).hasAnyAuthority("CONFIGURE_LIST_OF_VALUES")
+//		 .antMatchers(HttpMethod.GET,UrlPatterns.REFERENCE_DATA_SERVICE+UrlPatterns.GET_LOOKUPS).hasAnyAuthority("CONFIGURE_LIST_OF_VALUES")
 
 		 .antMatchers(HttpMethod.GET,UrlPatterns.SUBSCRIPTIONS_SERVICE+UrlPatterns.GET_SUBSCRIBER_BY_ID).hasAnyAuthority("SUBSCRIPTION","APPROVE_SUBSCRIPTION")
 		 .antMatchers(HttpMethod.POST,UrlPatterns.SUBSCRIPTIONS_SERVICE+UrlPatterns.ADD_SUBSCRIBER).hasAnyAuthority("SUBSCRIPTION")
